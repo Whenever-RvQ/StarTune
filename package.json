@@ -13,11 +13,15 @@
     "start": "electron .",
     "dev": "electron . --inspect=0.0.0.0:9229",
     "check": "node --check server.js && node --check desktop/main.js && node --check desktop/preload.js && node --check desktop/overlay-preload.js && node --check dj-analyzer.js",
+    "vite:build": "vite build",
+    "vite:watch": "vite build --watch",
+    "prebuild:win": "vite build",
+    "prebuild:mac": "vite build",
     "build:win": "electron-builder --win nsis",
     "build:win:dir": "electron-builder --win dir",
     "build:mac": "electron-builder --mac dmg",
     "build:mac:dir": "electron-builder --mac dir",
-    "build": "electron-builder -mwl",
+    "build": "vite build && electron-builder -mwl",
     "postinstall": "node -e \"console.log('StarTune install ok. Run: npm start')\""
   },
   "build": {
@@ -40,7 +44,11 @@
       "dj-analyzer.js",
       "package.json",
       "!public/index.*.html",
-      "public/index.html"
+      "public/index.html",
+      "!public/css/**",
+      "!src/**",
+      "!index.vite.html",
+      "!vite.config.js"
     ],
     "asar": false,
     "win": {
@@ -107,7 +115,8 @@
   "devDependencies": {
     "electron": "^42.4.1",
     "electron-builder": "^26.15.3",
-    "rcedit": "^5.0.2"
+    "rcedit": "^5.0.2",
+    "vite": "^8.1.0"
   },
   "engines": {
     "node": ">=18.0.0"
