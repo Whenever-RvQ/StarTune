@@ -1276,11 +1276,19 @@ function initIdleGuideCanvas() {
 // ============================================================
 var toastTimer = null;
 function showToast(msg) {
+  // 写入 React uiStore（Toast 组件会自动响应）
+  if (window.__uiStore) {
+    var prev = window.__uiStore.getState();
+    window.__uiStore.setState({ toast: msg, toastKey: (prev.toastKey || 0) + 1 });
+  }
+  // 保留原生 DOM 操作（渐进式兼容，后续移除）
   var t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  if (toastTimer) clearTimeout(toastTimer);
-  toastTimer = setTimeout(function(){ t.classList.remove('show'); }, 2600);
+  if (t) {
+    t.textContent = msg;
+    t.classList.add('show');
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ t.classList.remove('show'); }, 2600);
+  }
 }
 
 var visualGuideSteps = [

@@ -958,6 +958,11 @@ body.login-guide-active #login-guide-canvas{opacity:1}
 /* ---------- toast ---------- */
 #toast{position:fixed;z-index:200;top:84px;left:50%;transform:translateX(-50%) translateY(-8px);background:rgba(20,20,28,0.95);border:1px solid rgba(255,255,255,0.12);color:#fff;padding:10px 18px;border-radius:10px;font-size:12.5px;letter-spacing:.5px;opacity:0;pointer-events:none;transition:opacity .3s,transform .3s;backdrop-filter:blur(20px)}
 #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+/* React toast（渐进式迁移，与原生 #toast 视觉一致） */
+.react-toast{position:fixed;z-index:200;top:84px;left:50%;transform:translateX(-50%) translateY(-8px);background:rgba(20,20,28,0.95);border:1px solid rgba(255,255,255,0.12);color:#fff;padding:10px 18px;border-radius:10px;font-size:12.5px;letter-spacing:.5px;opacity:0;pointer-events:none;transition:opacity .3s,transform .3s;backdrop-filter:blur(20px)}
+.react-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+body.desktop-shell .react-toast{top:60px}
+body.immersive-mode .react-toast{opacity:0!important;visibility:hidden!important;pointer-events:none!important}
 #source-fallback-notice{position:fixed;z-index:201;top:72px;right:24px;width:min(330px,calc(100vw - 48px));padding:13px 14px;border-radius:14px;border:1px solid rgba(157,184,207,.24);background:rgba(12,13,18,.86);color:rgba(255,255,255,.86);box-shadow:0 20px 54px rgba(0,0,0,.40),inset 0 1px 0 rgba(255,255,255,.08);backdrop-filter:blur(26px) saturate(1.25);-webkit-backdrop-filter:blur(26px) saturate(1.25);opacity:0;pointer-events:none;transform:translateY(-8px);transition:opacity .26s,transform .26s}
 #source-fallback-notice.show{opacity:1;pointer-events:auto;transform:translateY(0)}
 .source-fallback-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:5px}

@@ -54,6 +54,37 @@ npm run build:win         # 自动先 vite build
 ls -la dist/
 ```
 
+## React 渐进式重构进度
+
+| Phase | 状态 | 内容 |
+| ----- | ---- | ---- |
+| Phase 0 | ✅ 完成 | React 18 + zustand + esbuild 基础设施；`#react-root` 挂载；`playerStore` / `uiStore` 暴露到 `window` |
+| Phase 1 | ✅ 完成 | Toast React 化（原生 `#toast` 自动隐藏）；ModalContainer 基础设施（GSAP 动画 + ESC/背景关闭）；`uiStore.openModal/closeModal/showToast` 桥接方法 |
+| Phase 2 | 🔲 待做 | 简单弹窗 React 化（track-detail / update / custom-lyric） |
+| Phase 3 | 🔲 待做 | 登录/用户弹窗 React 化 |
+| Phase 4 | 🔲 待做 | 搜索栏 + 底部播放器 React 化 |
+
+### React 文件结构
+
+```
+src/
+├─ react-app.jsx              # React 入口，挂载 App 到 #react-root
+├─ components/
+│  ├─ App.jsx                  # 根组件（Toast + ModalContainer）
+│  ├─ Toast.jsx                # Toast 组件（接管原生 #toast）
+│  └─ ModalContainer.jsx       # 弹窗容器（GSAP 动画 + 路由）
+└─ store/
+   ├─ player-store.js          # 播放器状态 zustand store
+   ├─ ui-store.js              # UI 状态 zustand store（含 toast / modal）
+   └─ hooks.js                 # usePlayerStore / useUiStore hooks
+```
+
+### 原生 JS ↔ React 桥接
+
+- **原生 → React**：`window.__uiStore.showToast(msg)` / `window.__uiStore.openModal(name, props)` / `window.__uiStore.closeModal()`
+- **React → 原生**：组件内直接调用 `window.xxx` 全局函数（如 `closeLoginModal()`）
+- **showToast** 函数已双写：同时写 uiStore（React Toast 响应）和原生 DOM（fallback）
+
 ## 已知技术债
 
 1. macOS 首次启动需右键「打开」绕过 Gatekeeper，未配置签名证书

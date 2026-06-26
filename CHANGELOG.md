@@ -12,6 +12,10 @@
 - 新增 `npm run vite:build` / `npm run vite:watch` 命令
 - 打包命令自动执行前端构建（`prebuild:win` / `prebuild:mac`）
 
+### React 渐进式重构
+- **Phase 0**：React 18 + zustand + esbuild 基础设施，`#react-root` 挂载点，`playerStore` / `uiStore` 暴露到 `window`
+- **Phase 1**：Toast 组件 React 化，React 接管 toast 渲染（原生 `#toast` DOM 自动隐藏）；Modal 容器组件基础设施（`ModalContainer` + GSAP 动画 + ESC/背景关闭）；`uiStore` 新增 `openModal` / `closeModal` / `showToast` 便捷方法
+
 ### 新增功能
 - **启动页改造**：开屏动画品牌改为 StarTune，副标题 `immersive visual player`，新星轨引擎 WebGL 着色器背景
 - **歌单架半收缩**：平时半隐藏在右侧边缘，光标接近即时弹出，无 260ms 延迟
