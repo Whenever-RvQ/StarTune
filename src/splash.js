@@ -548,6 +548,12 @@ function dismissSplash() {
     markAppPerf('home-revealed');
     if (s && s.parentNode) s.style.display = 'none';
     requestAnimationFrame(function(){
+      // 已登录且未正在播放时，始终先展示首页（即使队列已从持久化恢复）
+      var shouldForceHome = !playing && hasAnyPlatformLogin();
+      if (shouldForceHome) {
+        homeSuppressed = false;
+        homeForcedOpen = true;
+      }
       var homeShown = updateEmptyHomeVisibility({ forceLoad: true });
       if (!homeShown && shouldForceEmptyHomeAfterSplash()) {
         homeSuppressed = false;
@@ -848,25 +854,20 @@ var desktopWindowState = {};
 
 function toggleFullscreen() {
   var api = window.desktopWindow;
+  // Electron 桌面模式：直接用 Electron 原生全屏 API
   if (api && api.isDesktop && typeof api.toggleFullscreen === 'function') {
+    // 如果有 DOM 全屏先退出（避免 DOM fullscreen 和 Electron fullscreen 冲突）
     if (document.fullscreenElement && document.exitFullscreen) {
       document.exitFullscreen().catch(function(){});
-      scheduleMainRendererViewportRefresh('document-fullscreen-exit');
-      return;
     }
     api.toggleFullscreen();
     scheduleMainRendererViewportRefresh('desktop-fullscreen-toggle');
     return;
   }
-  if (api && api.isDesktop && desktopFullscreenActive && !document.fullscreenElement && typeof api.exitFullscreenWindowed === 'function') {
-    api.exitFullscreenWindowed();
-    scheduleMainRendererViewportRefresh('desktop-fullscreen-exit');
-    return;
-  }
+  // 非 Electron 环境（浏览器预览）：用 DOM Fullscreen API
   if (!document.fullscreenElement) {
     document.documentElement.requestFullscreen().catch(function(){
-      if (api && api.isDesktop && typeof api.toggleFullscreen === 'function') api.toggleFullscreen();
-      else showToast('全屏被浏览器拒绝');
+      showToast('全屏被浏览器拒绝');
     });
   } else {
     document.exitFullscreen();
@@ -881,6 +882,14 @@ function toggleFullscreen() {
   document.documentElement.classList.add('desktop-shell-root');
   document.body.classList.add('desktop-shell');
   document.body.classList.remove('desktop-fullscreen');
+  // 标记平台，用于 CSS 适配（macOS 交通灯按钮等）
+  if (api.getState) {
+    try {
+      var _initState = api.getState();
+      if (_initState && _initState.platform) document.body.classList.add('platform-' + _initState.platform);
+    } catch (e) {}
+  }
+  if (navigator.platform && /Mac/.test(navigator.platform)) document.body.classList.add('platform-darwin');
   desktopFullscreenActive = false;
   syncCursorAutoHideMode();
 

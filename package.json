@@ -13,10 +13,11 @@
     "start": "electron .",
     "dev": "electron . --inspect=0.0.0.0:9229",
     "check": "node --check server.js && node --check desktop/main.js && node --check desktop/preload.js && node --check desktop/overlay-preload.js && node --check dj-analyzer.js",
-    "vite:build": "vite build",
+    "build:react": "esbuild src/react-app.jsx --bundle --outfile=public/dist/react-app.js --format=iife --jsx=automatic --target=es2020 --define:process.env.NODE_ENV=\\\"production\\\"",
+    "vite:build": "vite build && npm run build:react",
     "vite:watch": "vite build --watch",
-    "prebuild:win": "vite build",
-    "prebuild:mac": "vite build",
+    "prebuild:win": "vite build && npm run build:react",
+    "prebuild:mac": "vite build && npm run build:react",
     "build:win": "electron-builder --win nsis",
     "build:win:dir": "electron-builder --win dir",
     "build:mac": "electron-builder --mac dmg",
@@ -110,11 +111,15 @@
   "dependencies": {
     "gsap": "^3.15.0",
     "mpg123-decoder": "^1.0.3",
-    "NeteaseCloudMusicApi": "^4.32.0"
+    "NeteaseCloudMusicApi": "^4.32.0",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7",
+    "zustand": "^5.0.14"
   },
   "devDependencies": {
     "electron": "^42.4.1",
     "electron-builder": "^26.15.3",
+    "esbuild": "^0.28.1",
     "rcedit": "^5.0.2",
     "vite": "^8.1.0"
   },

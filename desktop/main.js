@@ -1354,6 +1354,7 @@ async function createWindow() {
 
   const initialBounds = getWindowedBounds();
 
+  const isMac = process.platform === 'darwin';
   mainWindow = new BrowserWindow({
     ...initialBounds,
     minWidth: 960,
@@ -1361,8 +1362,11 @@ async function createWindow() {
     show: false,
     frame: false,
     fullscreen: false,
-    transparent: true,
-    backgroundColor: '#00000000',
+    fullscreenable: true,
+    titleBarStyle: isMac ? 'hiddenInset' : undefined,
+    trafficLightPosition: isMac ? { x: 14, y: 14 } : undefined,
+    transparent: !isMac,
+    backgroundColor: isMac ? '#010304' : '#00000000',
     hasShadow: true,
     autoHideMenuBar: true,
     title: APP_NAME,
