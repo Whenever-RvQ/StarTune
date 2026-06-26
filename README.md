@@ -130,9 +130,11 @@ npm start
 | `npm start` | 启动 StarTune 桌面应用 |
 | `npm run dev` | 启动并开启 Node 远程调试端口（9229） |
 | `npm run check` | 检查所有 JS 文件的语法 |
-| `npm run build:win` | 打包 Windows NSIS 安装包到 `dist/` |
+| `npm run vite:build` | 构建前端（将 `src/` 打包到 `public/dist/`） |
+| `npm run vite:watch` | 实时监听源码变化并自动重新构建 |
+| `npm run build:win` | 打包 Windows NSIS 安装包到 `dist/`（自动先 vite build） |
 | `npm run build:win:dir` | 打包 Windows 免安装版到 `dist/` |
-| `npm run build:mac` | 打包 macOS DMG 安装包到 `dist/` |
+| `npm run build:mac` | 打包 macOS DMG 安装包到 `dist/`（自动先 vite build） |
 | `npm run build:mac:dir` | 打包 macOS .app 到 `dist/` |
 | `npm run build` | 同时构建 Windows + macOS（需在对应平台运行） |
 
@@ -144,23 +146,33 @@ npm start
 
 ```
 StarTune/
-├── public/                # 前端 UI（HTML/CSS/JS，无构建步骤）
-│   ├── index.html         # 主 UI
+├── src/                   # 前端 JS 源码（Vite 构建入口）
+│   ├── main.js            # 入口文件（按序 import 各模块）
+│   ├── globals.js         # 全局状态 / 配置 / 状态持久化
+│   ├── lyrics-3d.js       # 舞台歌词 3D 系统
+│   ├── beatmap.js         # 封面深度 + 离线节拍分析
+│   ├── shelf.js           # 3D 歌单架 + 二级内容框
+│   ├── interaction.js     # 卡片交互 / 播放控制 / 歌单面板
+│   ├── fx-panel.js        # FX 控制台（预设/滑块/开关）
+│   ├── update.js          # 更新检查
+│   ├── login.js           # 登录 / 用户系统
+│   ├── splash.js          # 启动页动画 + 启动序列
+│   └── render-loop.js     # 主渲染循环
+├── public/                # 前端静态资源 + 构建产物
+│   ├── index.html         # 主 UI（仅 HTML DOM，~850 行）
+│   ├── css/app.css        # CSS 样式源码
+│   ├── dist/              # Vite 构建产物（app.js + style.css）
 │   ├── desktop-lyrics.html# 桌面歌词浮窗
 │   ├── wallpaper.html     # 桌面壁纸
-│   ├── vendor/            # 本地第三方依赖
-│   └── assets/            # 静态资源
+│   ├── vendor/            # 本地第三方依赖（Three.js/GSAP）
+│   └── assets/            # 内置资源
 ├── desktop/               # Electron 主进程
 │   ├── main.js            # 主入口：窗口、IPC、系统集成
 │   ├── preload.js         # 主窗口预加载
 │   └── overlay-preload.js # 浮窗预加载
 ├── build/                 # 打包资源
-│   ├── after-pack.js      # 打包后钩子（写入版本信息等）
-│   ├── installer.nsh      # NSIS 自定义安装器脚本
-│   ├── icon.ico           # Windows 图标
-│   ├── icon.icns          # macOS 图标
-│   └── icon.png           # 通用 PNG 图标
 ├── docs/                  # 项目设计文档与实现笔记
+├── vite.config.js         # Vite 构建配置
 ├── server.js              # 本地 API：搜索 / 播放 / 更新
 ├── dj-analyzer.js         # 节奏 / 音频分析
 ├── package.json
@@ -233,20 +245,26 @@ npm run build
 
 | 路径 | 作用 |
 | --- | --- |
-| `public/index.html` | 主 UI，包含搜索 / 播放 / 歌单 / 歌词 / 视觉控制台等全部前端逻辑 |
-| `public/desktop-lyrics.html` | 桌面歌词浮窗 |
-| `public/wallpaper.html` | 桌面壁纸窗口 |
-| `public/default-user-fx-archive.json` | 首次启动默认视觉存档 |
+| `src/main.js` | 前端 JS 入口，按序 import 各模块 |
+| `src/globals.js` | 全局状态 / Three.js 场景 / 相机 / 状态持久化 |
+| `src/lyrics-3d.js` | 舞台歌词 3D 系统 + 涟漪触发 |
+| `src/beatmap.js` | 封面深度处理 + 离线节拍预解析 |
+| `src/shelf.js` | 3D 歌单架（含半收缩弹出交互） |
+| `src/interaction.js` | 卡片交互 / 播放控制 / 搜索 / 歌单面板（含歌单内搜索） |
+| `src/fx-panel.js` | FX 控制台（预设/滑块/开关/颜色实验室） |
+| `src/splash.js` | 启动页动画 + 启动初始化序列 |
+| `src/render-loop.js` | 主渲染循环 |
+| `public/index.html` | 主 UI HTML DOM（~850 行，不含 JS/CSS） |
+| `public/css/app.css` | CSS 样式源码 |
+| `public/dist/` | Vite 构建产物（`app.js` + `style.css`） |
 | `public/vendor/` | 第三方库：three.js、gsap、music-tempo |
-| `public/assets/` | 内置资源（粒子点位等） |
+| `vite.config.js` | Vite 构建配置（含 concat 插件） |
 | `desktop/main.js` | Electron 主进程：窗口管理 / IPC / 系统集成 |
-| `desktop/preload.js` | 主窗口 `contextBridge` API 暴露 |
-| `desktop/overlay-preload.js` | 浮窗 `contextBridge` API 暴露 |
 | `server.js` | 本地 HTTP 服务：搜索 / 播放 / 歌词 / 更新检查 |
 | `dj-analyzer.js` | 节奏 / 音频特征分析（music-tempo 封装） |
 | `build/` | 打包资源与钩子 |
 | `docs/` | 设计笔记与实现细节 |
-| `package.json` | npm 元信息与 electron-builder 配置 |
+| `package.json` | npm 元信息、Vite 脚本与 electron-builder 配置 |
 
 ---
 

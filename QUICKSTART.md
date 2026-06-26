@@ -12,6 +12,7 @@
 ```bash
 cd StarTune
 npm install
+npm run vite:build   # 构建前端
 npm start
 ```
 
@@ -20,10 +21,11 @@ npm start
 ```powershell
 cd StarTune
 npm install
+npm run vite:build   # 构建前端
 npm start
 ```
 
-首次安装耗时约 1-3 分钟（取决于网络）。
+首次安装耗时约 1-3 分钟（取决于网络）。构建前端约 100ms。
 
 ---
 

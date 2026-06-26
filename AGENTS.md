@@ -33,8 +33,22 @@ ls -la         # 应看到 package.json / desktop / public / server.js 等
 
 ```
 StarTune/
+├─ src/                 # 前端 JS 源码（Vite 构建）
+│  ├─ main.js           # 入口（按序 import 各模块）
+│  ├─ globals.js        # 全局状态 / 配置 / 状态持久化
+│  ├─ lyrics-3d.js      # 舞台歌词 3D 系统
+│  ├─ beatmap.js        # 封面深度 + 离线节拍
+│  ├─ shelf.js          # 3D 歌单架
+│  ├─ interaction.js    # 卡片交互 / 播放 / 歌单面板
+│  ├─ fx-panel.js       # FX 控制台
+│  ├─ update.js         # 更新检查
+│  ├─ login.js          # 登录 / 用户系统
+│  ├─ splash.js         # 启动页 + 启动序列
+│  └─ render-loop.js    # 主渲染循环
 ├─ public/
-│  ├─ index.html        # 主 UI、CSS、歌词、粒子、3D 歌单架、视觉控制台
+│  ├─ index.html        # 主 UI HTML DOM（~850 行）
+│  ├─ css/app.css       # CSS 样式
+│  ├─ dist/             # Vite 构建产物（app.js + style.css）
 │  ├─ desktop-lyrics.html
 │  ├─ wallpaper.html
 │  ├─ vendor/           # 本地 vendor 依赖
@@ -42,6 +56,7 @@ StarTune/
 ├─ desktop/             # Electron main / preload / overlay-preload
 ├─ build/               # 打包资源、NSIS 脚本、图标
 ├─ docs/                # 设计笔记、长期约束
+├─ vite.config.js       # Vite 构建配置
 ├─ server.js            # 本地 API、音乐源、更新检查
 ├─ dj-analyzer.js       # 节奏 / 音频分析
 ├─ package.json         # 版本号、构建命令、electron-builder 配置
@@ -51,20 +66,23 @@ StarTune/
 ## 常用命令
 
 ```bash
+npm run vite:build        # 构建前端（src/ → public/dist/）
+npm run vite:watch        # 实时监听源码变化自动重建
 npm start                 # 启动桌面应用
 npm run dev               # 启动 + 远程调试
 npm run check             # 语法检查
-npm run build:win         # Windows NSIS 安装包
+npm run build:win         # Windows NSIS 安装包（自动先 vite build）
 npm run build:win:dir     # Windows 免安装版
-npm run build:mac         # macOS DMG
+npm run build:mac         # macOS DMG（自动先 vite build）
 npm run build:mac:dir     # macOS .app
 ```
 
-前端主逻辑在 `public/index.html`。改完前端后重启 `npm start` 即可看到效果。
+前端 JS 源码在 `src/` 目录，CSS 在 `public/css/app.css`，HTML 在 `public/index.html`。
 
-改动后必须执行：
+改完源码后必须执行：
 
 ```bash
+npm run vite:build        # 重新构建前端
 npm run check             # 语法检查
 ```
 
