@@ -15,6 +15,7 @@
 ### React 渐进式重构
 - **Phase 0**：React 18 + zustand + esbuild 基础设施，`#react-root` 挂载点，`playerStore` / `uiStore` 暴露到 `window`
 - **Phase 1**：Toast 组件 React 化，React 接管 toast 渲染（原生 `#toast` DOM 自动隐藏）；Modal 容器组件基础设施（`ModalContainer` + GSAP 动画 + ESC/背景关闭）；`uiStore` 新增 `openModal` / `closeModal` / `showToast` 便捷方法
+- **Phase 2**：Portal 式弹窗迁移 — track-detail / update / custom-lyric 三个弹窗的 mask+动画层由 React `ModalContainer` 接管；原生 `open/close` 函数桥接到 `uiStore`；ESC handler 增加 React 状态感知
 
 ### 新增功能
 - **启动页改造**：开屏动画品牌改为 StarTune，副标题 `immersive visual player`，新星轨引擎 WebGL 着色器背景

@@ -193,12 +193,22 @@ function openUpdatePanel() {
   if (entry && window.gsap) {
     window.gsap.fromTo(entry, { scale: 0.93 }, { scale: 1, duration: 0.42, ease: 'back.out(1.7)', overwrite: 'auto' });
   }
-  openGsapModal(mask);
+  // React ModalContainer 接管弹窗打开
+  if (window.__uiStore) {
+    window.__uiStore.openModal('update');
+  } else {
+    openGsapModal(mask);
+  }
   updatePreviewState.open = true;
   animateUpdatePanelContents();
 }
 
 function closeUpdatePanel() {
+  if (window.__uiStore && window.__uiStore.getState().activeModal === 'update') {
+    window.__uiStore.closeModal();
+    updatePreviewState.open = false;
+    return;
+  }
   closeGsapModal(document.getElementById('update-modal'), function(){
     updatePreviewState.open = false;
   });

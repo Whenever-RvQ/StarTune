@@ -1663,6 +1663,11 @@ function bindTrackDetailScrollers() {
   if (body) body.querySelectorAll('.detail-scroll').forEach(bindSmoothWheelScroll);
 }
 function closeTrackDetailModal() {
+  // React ModalContainer 接管关闭动画
+  if (window.__uiStore && window.__uiStore.getState().activeModal === 'trackDetail') {
+    window.__uiStore.closeModal();
+    return;
+  }
   closeGsapModal(document.getElementById('track-detail-modal'));
 }
 function openTrackDetailModal(type, songOverride) {
@@ -1779,7 +1784,12 @@ function openTrackDetailModal(type, songOverride) {
     }
   }
   bindTrackDetailScrollers();
-  openGsapModal(document.getElementById('track-detail-modal'));
+  // React ModalContainer 接管弹窗打开
+  if (window.__uiStore) {
+    window.__uiStore.openModal('trackDetail');
+  } else {
+    openGsapModal(document.getElementById('track-detail-modal'));
+  }
 }
 function openArtistDetailForSong(song) {
   if (!song) { showToast('未找到歌手信息'); return; }
@@ -2070,10 +2080,19 @@ function openCustomLyricModal() {
   if (sub) sub.textContent = (song.artist || (song.type === 'podcast' ? 'Podcast' : '')) + (entry ? ' · 已保存自定义歌词' : ' · 可粘贴 LRC 或逐行输入');
   if (input) input.value = entry ? (entry.text || '') : '';
   setCustomLyricStatus(entry ? '已读取本地自定义歌词' : '提示：带 [00:12.00] 时间轴会更精准；纯文本会自动铺开', entry ? 'good' : '');
-  openGsapModal(document.getElementById('custom-lyric-modal'));
+  // React ModalContainer 接管弹窗打开
+  if (window.__uiStore) {
+    window.__uiStore.openModal('customLyric');
+  } else {
+    openGsapModal(document.getElementById('custom-lyric-modal'));
+  }
   setTimeout(function(){ if (input) input.focus(); }, 120);
 }
 function closeCustomLyricModal() {
+  if (window.__uiStore && window.__uiStore.getState().activeModal === 'customLyric') {
+    window.__uiStore.closeModal();
+    return;
+  }
   closeGsapModal(document.getElementById('custom-lyric-modal'));
 }
 function saveCustomLyricForCurrent() {

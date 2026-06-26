@@ -2056,16 +2056,32 @@ document.addEventListener('keydown', function(e){
       else closeLocalBeatModal();
       return;
     }
+    var reactModal = window.__uiStore && window.__uiStore.getState().activeModal;
+    if (reactModal === 'customLyric') {
+      e.preventDefault();
+      closeCustomLyricModal();
+      return;
+    }
     var customLyricModal = document.getElementById('custom-lyric-modal');
     if (customLyricModal && customLyricModal.classList.contains('show')) {
       e.preventDefault();
       closeCustomLyricModal();
       return;
     }
+    if (reactModal === 'trackDetail') {
+      e.preventDefault();
+      closeTrackDetailModal();
+      return;
+    }
     var trackDetailModal = document.getElementById('track-detail-modal');
     if (trackDetailModal && trackDetailModal.classList.contains('show')) {
       e.preventDefault();
       closeTrackDetailModal();
+      return;
+    }
+    if (reactModal === 'update') {
+      e.preventDefault();
+      closeUpdatePanel();
       return;
     }
     if (miniQueueOpen) { closeMiniQueue(); return; }

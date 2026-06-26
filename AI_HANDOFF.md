@@ -60,7 +60,7 @@ ls -la dist/
 | ----- | ---- | ---- |
 | Phase 0 | ✅ 完成 | React 18 + zustand + esbuild 基础设施；`#react-root` 挂载；`playerStore` / `uiStore` 暴露到 `window` |
 | Phase 1 | ✅ 完成 | Toast React 化（原生 `#toast` 自动隐藏）；ModalContainer 基础设施（GSAP 动画 + ESC/背景关闭）；`uiStore.openModal/closeModal/showToast` 桥接方法 |
-| Phase 2 | 🔲 待做 | 简单弹窗 React 化（track-detail / update / custom-lyric） |
+| Phase 2 | ✅ 完成 | Portal 式弹窗迁移：track-detail / update / custom-lyric 三个弹窗的 mask+动画层由 React ModalContainer 接管，弹窗内容仍由原生 JS 控制；原生 open/close 函数桥接到 uiStore；ESC handler 增加 uiStore 状态检查 |
 | Phase 3 | 🔲 待做 | 登录/用户弹窗 React 化 |
 | Phase 4 | 🔲 待做 | 搜索栏 + 底部播放器 React 化 |
 
@@ -72,7 +72,7 @@ src/
 ├─ components/
 │  ├─ App.jsx                  # 根组件（Toast + ModalContainer）
 │  ├─ Toast.jsx                # Toast 组件（接管原生 #toast）
-│  └─ ModalContainer.jsx       # 弹窗容器（GSAP 动画 + 路由）
+│  └─ ModalContainer.jsx       # Portal 式弹窗容器（将原生 .modal 元素移入 React mask，管理 GSAP 动画）
 └─ store/
    ├─ player-store.js          # 播放器状态 zustand store
    ├─ ui-store.js              # UI 状态 zustand store（含 toast / modal）
